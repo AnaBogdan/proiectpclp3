@@ -11,8 +11,10 @@ typedef struct {
 } Driver;
 
 Driver drivers[] = {
-    {"Logan Sargeant", "Williams", 2, 2023, 0}
+    {"Logan Sargeant", "Williams", 2, 2023, 0},
+    {"Stoffel Vandoorne", "McLaren", 2016, 0},
     {"Daniel Ricciardo", "McLaren", 3, 2011, 7},
+    {"Max Chilton", "Marussia", 4, 2013, 0},
     {"Lando Norris", "McLaren", 4, 2019, 0},
     {"Sebastian Vettel", "Aston Martin", 5, 2007, 53},
     {"Nicholas Latifi", "Williams", 6, 2020, 0},
