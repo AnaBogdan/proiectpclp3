@@ -4,6 +4,8 @@
 #include <time.h>
 #include <ncurses.h>
 
+#define totalDrivers 52
+
 typedef struct {
     char name[50];
     char team[50];
@@ -69,7 +71,6 @@ Driver drivers[] = {
     {"Adrian Sutil", "Sauber", "Germany", 99, 2007, 0}
 };
 
-int totalDrivers = sizeof(drivers) / sizeof(Driver);
 
 int findDriverIndex(char* name) {
     for (int i = 0; i < totalDrivers; i++) {
@@ -179,7 +180,7 @@ aux = findDriverIndex(drivers[i].name);
 printw("\nDriver Name: %s\n", drivers[i].name);
 refresh();
 
-while (!found) {
+while (!found && count < 6) {
     printw("Enter your guess: ");
     getstr(guess);
     index = findDriverIndex(guess);
@@ -194,12 +195,18 @@ while (!found) {
             attroff(COLOR_PAIR(1)); // Turn off color pair 1
             printw("+----------------------+-----------------+-----------------+------------+------------+--------+\n");
             found = 1;
+            attron(A_BOLD);
+            printw("+----------------------------- GOOD JOB! YOUR GUESS IS CORRECT! ------------------------------+\n");
+            attroff(A_BOLD);
         } else {
             attron(COLOR_PAIR(2));  // Set color pair 2 (incorrect guess)
             printDriverbad(index, aux);
             attroff(COLOR_PAIR(2)); // Turn off color pair 2
             printw("+----------------------+-----------------+-----------------+------------+------------+--------+\n");
             count++;
+            attron(A_BOLD);
+            printw("+---------------------------------------- TRY AGAIN! -----------------------------------------+\n");
+            attroff(A_BOLD);
         }
     } else {
         printw("Invalid guess. Please try again.\n");
