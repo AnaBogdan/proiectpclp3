@@ -91,56 +91,50 @@ void printDriver(int index) {
 
 void printDriverbad(int index, int correct) {
     if (index >= 0 && index < totalDrivers) {
-        attron(COLOR_PAIR(2)); // Set color pair 1 (red)
-        printw("Driver: \t%s\n", drivers[index].name);
-        attroff(COLOR_PAIR(2)); // Reset color pair
+        printw("| %-20s ", drivers[index].name);
 
         if (strcmp(drivers[index].team, drivers[correct].team) == 0) {
             attron(COLOR_PAIR(1)); // Set color pair 1 (green)
-            printw("Team: \t\t%s\n", drivers[index].team);
         } else {
             attron(COLOR_PAIR(2)); // Set color pair 2 (red)
-            printw("Team: \t\t%s\n", drivers[index].team);
         }
+        printw("| %-15s ", drivers[index].team);
 
         if (strcmp(drivers[index].country, drivers[correct].country) == 0) {
-            attron(COLOR_PAIR(1)); // Set color pair 2 (green)
-            printw("Country: \t%s\n", drivers[index].country);
+            attron(COLOR_PAIR(1)); // Set color pair 1 (green)
         } else {
-            attron(COLOR_PAIR(2)); // Set color pair 1 (red)
-            printw("Country: \t%s\n", drivers[index].country);
+            attron(COLOR_PAIR(2)); // Set color pair 2 (red)
         }
+        printw("| %-15s ", drivers[index].country);
 
         if (drivers[index].carNumber < drivers[correct].carNumber) {
             attron(COLOR_PAIR(4)); // Set color pair 3 (orange)
-            printw("Car Number: \t%d\n", drivers[index].carNumber);
         } else if (drivers[index].carNumber > drivers[correct].carNumber) {
             attron(COLOR_PAIR(3)); // Set color pair 4 (purple)
-            printw("Car Number: \t%d\n", drivers[index].carNumber);
         } else {
-            attron(COLOR_PAIR(1)); // Set color pair 2 (green)
-            printw("Car Number: \t%d\n", drivers[index].carNumber);
+            attron(COLOR_PAIR(1)); // Set color pair 1 (green)
         }
+        printw("| %-10d ", drivers[index].carNumber);
 
-        if (drivers[index].debutYear == drivers[correct].debutYear) {
-            attron(COLOR_PAIR(1)); // Set color pair 2 (green)
-            printw("Debut Year: \t%d\n", drivers[index].debutYear);
+        if (drivers[index].debutYear < drivers[correct].debutYear) {
+            attron(COLOR_PAIR(4)); // Set color pair 3 (orange)
+        } else if (drivers[index].debutYear > drivers[correct].debutYear) {
+            attron(COLOR_PAIR(3)); // Set color pair 4 (purple)
         } else {
-            attron(COLOR_PAIR(2)); // Set color pair 1 (red)
-            printw("Debut Year: \t%d\n", drivers[index].debutYear);
+            attron(COLOR_PAIR(1)); // Set color pair 1 (green)
         }
+        printw("| %-10d ", drivers[index].debutYear);
 
         if (drivers[index].wins < drivers[correct].wins) {
             attron(COLOR_PAIR(4)); // Set color pair 3 (orange)
-            printw("Number of Wins: %d\n", drivers[index].wins);
         } else if (drivers[index].wins > drivers[correct].wins) {
             attron(COLOR_PAIR(3)); // Set color pair 4 (purple)
-            printw("Number of Wins: %d\n", drivers[index].wins);
         } else {
-            attron(COLOR_PAIR(1)); // Set color pair 2 (green)
-            printw("Number of Wins: %d\n", drivers[index].wins);
+            attron(COLOR_PAIR(1)); // Set color pair 1 (green)
         }
+        printw("| %-6d |\n", drivers[index].wins);
 
+        attron(COLOR_PAIR(1)); // Reset color pair to default
         refresh(); // Refresh the screen
     }
 }
@@ -189,16 +183,22 @@ while (!found) {
     printw("Enter your guess: ");
     getstr(guess);
     index = findDriverIndex(guess);
+    printw("+----------------------+-----------------+-----------------+------------+------------+--------+\n");
+    printw("| Driver               | Team            | Country         | Car Number | Debut Year | Wins   |\n");
+    printw("+----------------------+-----------------+-----------------+------------+------------+--------+\n");
+
     if (index != -1) {
         if (strcmp(drivers[index].name, drivers[i].name) == 0) {
             attron(COLOR_PAIR(1));  // Set color pair 1 (correct guess)
             printDriver(index);
             attroff(COLOR_PAIR(1)); // Turn off color pair 1
+            printw("+----------------------+-----------------+-----------------+------------+------------+--------+\n");
             found = 1;
         } else {
             attron(COLOR_PAIR(2));  // Set color pair 2 (incorrect guess)
             printDriverbad(index, aux);
             attroff(COLOR_PAIR(2)); // Turn off color pair 2
+            printw("+----------------------+-----------------+-----------------+------------+------------+--------+\n");
             count++;
         }
     } else {
