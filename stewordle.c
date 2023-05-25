@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <ncurses.h>
 
 typedef struct {
     char name[50];
@@ -8,8 +10,9 @@ typedef struct {
     char country[50];
     int carNumber;
     int debutYear;
-    int numOfWins;
+    int wins;
 } Driver;
+
 
 Driver drivers[] = {
     {"Stoffel Vandoorne", "McLaren", "Belgium", 2, 2017, 0},
@@ -39,7 +42,7 @@ Driver drivers[] = {
     {"Nyck de Vries", "AlphaTauri", "Netherlands", 21, 2022, 0},
     {"Jenson Button", "McLaren", "United Kingdom", 22, 2002, 15},
     {"Yuki Tsunoda", "AlphaTauri", "Japan", 22, 2021, 0},
-    {"Alexander Albon", "Williams", "Thailand", 23, 2019, 0},
+    {"Alex Albon", "Williams", "Thailand", 23, 2019, 0},
     {"Zhou Guanyu", "Alfa Romeo", "China", 24, 2022, 0},
     {"Jean-Éric Vergne", "Torro Rosso", "France", 25, 2012, 0},
     {"Daniil Kvyat", "AlphaTauri", "Russia", 26, 2014, 0},
@@ -62,43 +65,152 @@ Driver drivers[] = {
     {"Jack Aitken", "Williams", "United Kingdom", 89, 2020, 0},
     {"Pascal Wehrlein", "Sauber", "Germany", 94, 2016, 0},
     {"Roberto Merhi", "Marussia", "Spain", 98, 2015, 0},
-    {"Antonio Giovinazzi", "Haas", "Italy", 99, 2019, 0}
+    {"Antonio Giovinazzi", "Haas", "Italy", 99, 2019, 0},
     {"Adrian Sutil", "Sauber", "Germany", 99, 2007, 0}
 };
 
 int totalDrivers = sizeof(drivers) / sizeof(Driver);
 
-int main() {
-    char playerName[50];
-    int i, guess, found = 0;
-
-    printf("Welcome to the Formula 1 Driver Guessing Game!\n");
-    printf("Enter your name: ");
-    scanf("%s", playerName);
-    printf("\n");
-
-    printf("Guess the driver!\n");
-    printf("Enter the number corresponding to the driver's name:\n");
-
-    while (!found) {
-        i = rand() % totalDrivers;
-
-        printf("\nDriver Name: %s\n", drivers[i].name);
-        printf("Enter your guess: ");
-        scanf("%d", &guess);
-
-        if (guess == i) {
-            printf("\nCongratulations, %s! Your guess is correct!\n", playerName);
-            printf("Driver: %s\n", drivers[i].name);
-            printf("Team: %s\n", drivers[i].team);
-            printf("Car Number: %d\n", drivers[i].carNumber);
-            printf("Debut Year: %d\n", drivers[i].debutYear);
-            printf("Number of Wins: %d\n", drivers[i].numOfWins);
-            found = 1;
-        } else {
-            printf("Oops! Incorrect guess. Try again!\n");
+int findDriverIndex(char* name) {
+    for (int i = 0; i < totalDrivers; i++) {
+        if (strncmp( drivers[i].name, name, strlen(drivers[i].name) - 1) == 0)  {
+            return i; // return the index of the driver if found
         }
     }
+    return -1; // return -1 if driver not found
+}
 
-    return 0;
+void printDriver(int index) {
+    if (index >= 0 && index < totalDrivers) {
+        printw("| %-20s | %-15s | %-15s | %-10d | %-10d | %-6d |\n",
+               drivers[index].name, drivers[index].team, drivers[index].country,
+               drivers[index].carNumber, drivers[index].debutYear, drivers[index].wins);
+    }
+}
+
+
+void printDriverbad(int index, int correct) {
+    if (index >= 0 && index < totalDrivers) {
+        attron(COLOR_PAIR(2)); // Set color pair 1 (red)
+        printw("Driver: \t%s\n", drivers[index].name);
+        attroff(COLOR_PAIR(2)); // Reset color pair
+
+        if (strcmp(drivers[index].team, drivers[correct].team) == 0) {
+            attron(COLOR_PAIR(1)); // Set color pair 1 (green)
+            printw("Team: \t\t%s\n", drivers[index].team);
+        } else {
+            attron(COLOR_PAIR(2)); // Set color pair 2 (red)
+            printw("Team: \t\t%s\n", drivers[index].team);
+        }
+
+        if (strcmp(drivers[index].country, drivers[correct].country) == 0) {
+            attron(COLOR_PAIR(1)); // Set color pair 2 (green)
+            printw("Country: \t%s\n", drivers[index].country);
+        } else {
+            attron(COLOR_PAIR(2)); // Set color pair 1 (red)
+            printw("Country: \t%s\n", drivers[index].country);
+        }
+
+        if (drivers[index].carNumber < drivers[correct].carNumber) {
+            attron(COLOR_PAIR(4)); // Set color pair 3 (orange)
+            printw("Car Number: \t%d\n", drivers[index].carNumber);
+        } else if (drivers[index].carNumber > drivers[correct].carNumber) {
+            attron(COLOR_PAIR(3)); // Set color pair 4 (purple)
+            printw("Car Number: \t%d\n", drivers[index].carNumber);
+        } else {
+            attron(COLOR_PAIR(1)); // Set color pair 2 (green)
+            printw("Car Number: \t%d\n", drivers[index].carNumber);
+        }
+
+        if (drivers[index].debutYear == drivers[correct].debutYear) {
+            attron(COLOR_PAIR(1)); // Set color pair 2 (green)
+            printw("Debut Year: \t%d\n", drivers[index].debutYear);
+        } else {
+            attron(COLOR_PAIR(2)); // Set color pair 1 (red)
+            printw("Debut Year: \t%d\n", drivers[index].debutYear);
+        }
+
+        if (drivers[index].wins < drivers[correct].wins) {
+            attron(COLOR_PAIR(4)); // Set color pair 3 (orange)
+            printw("Number of Wins: %d\n", drivers[index].wins);
+        } else if (drivers[index].wins > drivers[correct].wins) {
+            attron(COLOR_PAIR(3)); // Set color pair 4 (purple)
+            printw("Number of Wins: %d\n", drivers[index].wins);
+        } else {
+            attron(COLOR_PAIR(1)); // Set color pair 2 (green)
+            printw("Number of Wins: %d\n", drivers[index].wins);
+        }
+
+        refresh(); // Refresh the screen
+    }
+}
+
+
+
+
+int main() {
+srand(time(NULL));
+echo();
+char playerName[50];
+int i, found = 0, count = 0;
+char guess[50];
+int index, aux;
+
+// Initialize ncurses
+initscr();
+cbreak();
+start_color();
+keypad(stdscr, TRUE);
+
+// Check if terminal supports colors
+if (has_colors() == FALSE) {
+    printw("Your terminal does not support color.\n");
+    endwin();
+    return 1;
+}
+
+// Initialize color pairs
+init_pair(1, COLOR_GREEN, COLOR_BLACK);      // Correct guess
+init_pair(2, COLOR_RED, COLOR_BLACK);        // Incorrect guess
+init_pair(3, COLOR_MAGENTA, COLOR_BLACK);    // Too high car number
+init_pair(4, COLOR_YELLOW, COLOR_BLACK);     // Too low car number
+
+printw("Welcome to the Formula 1 Driver Guessing Game!\n");
+printw("\n");
+
+printw("Guess the driver!\n");
+printw("Enter the name corresponding to the driver's name:\n");
+i = rand() % totalDrivers;
+aux = findDriverIndex(drivers[i].name);
+printw("\nDriver Name: %s\n", drivers[i].name);
+refresh();
+
+while (!found) {
+    printw("Enter your guess: ");
+    getstr(guess);
+    index = findDriverIndex(guess);
+    if (index != -1) {
+        if (strcmp(drivers[index].name, drivers[i].name) == 0) {
+            attron(COLOR_PAIR(1));  // Set color pair 1 (correct guess)
+            printDriver(index);
+            attroff(COLOR_PAIR(1)); // Turn off color pair 1
+            found = 1;
+        } else {
+            attron(COLOR_PAIR(2));  // Set color pair 2 (incorrect guess)
+            printDriverbad(index, aux);
+            attroff(COLOR_PAIR(2)); // Turn off color pair 2
+            count++;
+        }
+    } else {
+        printw("Invalid guess. Please try again.\n");
+    }
+}
+
+getch();
+// Clean up ncurses
+endwin();
+
+return 0;
+
+
 }
