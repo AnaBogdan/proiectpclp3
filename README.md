@@ -1,2 +1,2 @@
-# proiectpclp3
+# Poiect pclp3
 Stewordle 
